@@ -63,7 +63,7 @@ Modu³ apache SpeedyCGI.
 %patch -p1
 
 %build
-perl Makefile.PL </dev/null
+%{__perl} Makefile.PL </dev/null
 cd mod_speedycgi && perl Makefile.PL
 cd ..
 
