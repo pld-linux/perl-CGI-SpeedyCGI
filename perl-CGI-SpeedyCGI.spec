@@ -18,7 +18,7 @@ Source1:	apache-mod_speedycgi.conf
 Patch0:		%{name}-DESTDIR.patch
 BuildRequires:	apache(EAPI)-devel
 BuildRequires:	rpm-perlprov >= 3.0.3-16
-BuildRequires:	perl >= 5.6
+BuildRequires:	perl-devel >= 5.6
 Requires(post,preun):	/usr/sbin/apxs
 Requires(post,preun):	apache
 Requires(post,preun):	grep
