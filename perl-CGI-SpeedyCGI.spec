@@ -1,7 +1,7 @@
 #
 # Conditional build:
-# _without_tests - do not perform "make test"
-# _with_apache1 - use apache1 instead of apache (apxs1 instead apxs)
+%bcond_without	tests	# do not perform "make test"
+%bcond_with	apache1	# use apache1 instead of apache (apxs1 instead apxs)
 #
 %include 	/usr/lib/rpm/macros.perl
 %define		pdir	CGI
@@ -22,14 +22,14 @@ Patch1:		%{name}-APXS.patch
 BuildRequires:	apache(EAPI)-devel
 BuildRequires:	rpm-perlprov >= 3.0.3-16
 BuildRequires:	perl-devel >= 5.6
-Requires(post,preun):	/usr/sbin/%{?_with_apache1:apxs1}%{!?_with_apache1:apxs}
-Requires(post,preun):	%{?_with_apache1:apache1}%{!?_with_apache1:apache}
+Requires(post,preun):	/usr/sbin/apxs%{?with_apache1:1}
+Requires(post,preun):	apache%{?with_apache1:1}%
 Requires(post,preun):	grep
 Requires(preun):	fileutils
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		apxs		/usr/sbin/%{?_with_apache1:apxs1}%{!?_with_apache1:apxs}
-%define		apache_moddir	%(/usr/sbin/%{?_with_apache1:apxs1}%{!?_with_apache1:apxs} -q LIBEXECDIR)
+%define		apxs		/usr/sbin/apxs%{?with_apache1:1}
+%define		apache_moddir	%(/usr/sbin/apxs%{?with_apache1:1} -q LIBEXECDIR)
 %define		httpdir		/home/services/httpd
 
 %description
@@ -75,7 +75,7 @@ cd ..
 %{__make} -C mod_speedycgi APXS="%{apxs}" \
 	OPTIMIZE="%{rpmcflags}"
 
-%{!?_without_tests:%{__make} test}
+%{?with_test:%{__make} test}
 
 APXS="%{apxs}"
 
