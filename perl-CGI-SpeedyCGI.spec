@@ -4,7 +4,7 @@
 Summary:	Speed up perl CGI scripts by running them persistently
 Name:		perl-%{perlname}
 Version:	2.11
-Release:	2
+Release:	3
 License:	GPL
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
@@ -70,7 +70,7 @@ gzip -9nf README docs/*.txt contrib/Mason-SpeedyCGI-HOWTO
 rm -rf $RPM_BUILD_ROOT
 
 %post -n apache-mod_speedycgi
-%{_sbindir}/apxs -e -a -n proxy %{_libexecdir}/mod_speedycgi.so 1>&2
+%{_sbindir}/apxs -e -a -n speedycgi %{_libexecdir}/mod_speedycgi.so 1>&2
 if [ -f /etc/httpd/httpd.conf ] && ! grep -q "^Include.*mod_speedycgi.conf" /etc/httpd/httpd.conf; then
 	echo "Include /etc/httpd/mod_speedycgi.conf" >> /etc/httpd/httpd.conf
 fi
@@ -82,7 +82,7 @@ fi
 
 %preun -n apache-mod_speedycgi
 if [ "$1" = "0" ]; then
-	%{_sbindir}/apxs -e -A -n proxy %{_libexecdir}/mod_speedycgi.so 1>&2
+	%{_sbindir}/apxs -e -A -n speedycgi %{_libexecdir}/mod_speedycgi.so 1>&2
 	grep -v -q "^Include.*mod_speedycgi.conf" /etc/httpd/httpd.conf > \
 		/etc/httpd/httpd.conf.tmp
 	mv -f /etc/httpd/httpd.conf.tmp /etc/httpd/httpd.conf
