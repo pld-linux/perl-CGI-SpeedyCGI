@@ -16,8 +16,6 @@ Patch0:		%{name}-DESTDIR.patch
 BuildRequires:	apache(EAPI)-devel
 BuildRequires:	rpm-perlprov >= 3.0.3-16
 BuildRequires:	perl >= 5.6
-%requires_eq	perl
-Requires:	%{perl_sitearch}
 Prereq:		/usr/sbin/apxs 
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
