@@ -4,7 +4,7 @@
 Summary:	Speed up perl CGI scripts by running them persistently
 Name:		perl-%{perlname}
 Version:	2.11
-Release:	1
+Release:	2
 License:	GPL
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
