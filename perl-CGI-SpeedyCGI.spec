@@ -9,7 +9,7 @@ Release:	6
 License:	GPL
 Group:		Networking/Daemons
 URL:		http://daemoninc.com/SpeedyCGI/
-Source0:	ftp://ftp.perl.org/pub/CPAN/modules/by-module/CGI/%{perlname}-%{version}.tar.gz
+Source0:	ftp://ftp.cpan.org/pub/CPAN/modules/by-module/CGI/%{perlname}-%{version}.tar.gz
 Source1:	apache-mod_speedycgi.conf
 Patch0:		%{name}-DESTDIR.patch
 BuildRequires:	apache(EAPI)-devel
