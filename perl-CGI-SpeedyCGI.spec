@@ -2,9 +2,10 @@
 %define         perlname CGI-SpeedyCGI
 
 Summary:	Speed up perl CGI scripts by running them persistently
+Summary(pl):	Modu³ przyspieszaj±cy perlowe skrypty CGI
 Name:		perl-%{perlname}
 Version:	2.11
-Release:	4
+Release:	5
 License:	GPL
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
@@ -29,8 +30,17 @@ memory. During subsequent runs, this interpreter is used to handle new
 requests, instead of starting a new perl interpreter for each
 execution.
 
+%description -l pl
+SpeedyCGI to sposób na ci±g³e dzia³anie perlowych skryptów CGI, co
+zazwyczaj pododuje, ¿e uruchamiaj± siê du¿o szybciej. Po pocz±tkowym
+uruchomieniu skryptu, SpeedyCGI trzyma interpreter perla w pamiêci.
+Przy kolejnych uruchomieniach ten interpreter jest wykorzystywany do
+obs³ugi kolejnych zleceñ, zamiast uruchamiania nowego interpretera
+perla do ka¿dego uruchomienia skryptu.
+
 %package -n apache-mod_speedycgi
 Summary:	SpeedyCGI apache module
+Summary(pl):	Modu³ apache SpeedyCGI
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
@@ -39,6 +49,9 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description -n apache-mod_speedycgi
 SpeedyCGI apache module.
+
+%description -n apache-mod_speedycgi -l pl
+Modu³ apache SpeedyCGI.
 
 %prep
 %setup -q -n %{perlname}-%{version}
