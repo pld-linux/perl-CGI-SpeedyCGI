@@ -4,8 +4,8 @@
 %bcond_with	apache1	# use apache1 instead of apache (apxs1 instead apxs)
 #
 %include 	/usr/lib/rpm/macros.perl
-%define		pdir	CGI
-%define         pnam	SpeedyCGI
+%define	pdir	CGI
+%define	pnam	SpeedyCGI
 Summary:	Speed up perl CGI scripts by running them persistently
 Summary(pl):	Modu³ przyspieszaj±cy perlowe skrypty CGI
 Name:		perl-CGI-SpeedyCGI
