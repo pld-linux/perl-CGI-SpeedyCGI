@@ -1,7 +1,7 @@
 #
 # Conditional build:
 %bcond_without	tests	# do not perform "make test"
-%bcond_with	apache1	# use apache1 instead of apache (apxs1 instead apxs)
+%bcond_without	apache1	# do not use apache1 instead of apache (apxs1 instead apxs)
 #
 %include 	/usr/lib/rpm/macros.perl
 %define	pdir	CGI
@@ -10,7 +10,7 @@ Summary:	Speed up perl CGI scripts by running them persistently
 Summary(pl):	Modu³ przyspieszaj±cy perlowe skrypty CGI
 Name:		perl-CGI-SpeedyCGI
 Version:	2.22
-Release:	3
+Release:	4
 License:	GPL v2+
 Group:		Networking/Daemons
 URL:		http://daemoninc.com/SpeedyCGI/
