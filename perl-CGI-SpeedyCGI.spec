@@ -3,7 +3,7 @@
 
 Summary:	Speed up perl CGI scripts by running them persistently
 Name:		perl-%{perlname}
-Version:	2.0
+Version:	2.0.1
 Release:	1
 Copyright:	GPL
 Group:		Networking/Daemons
@@ -43,8 +43,8 @@ SpeedyCGI apache module.
 perl Makefile.PL
 ( cd mod_speedycgi && perl Makefile.PL )
 
-%{__make} -C mod_speedycgi OPTIMIZE="$RPM_OPT_FLAGS" APXS="/usr/sbin/apxs"
 %{__make} OPTIMIZE="$RPM_OPT_FLAGS"
+%{__make} -C mod_speedycgi OPTIMIZE="$RPM_OPT_FLAGS" APXS="/usr/sbin/apxs"
 
 
 %install
