@@ -12,7 +12,7 @@ Group(pl):	Sieciowe/Serwery
 Source0:	ftp://download.sourceforge.net/pub/sourceforge/speedycgi/%{perlname}-%{version}.tar.gz
 Source1:	apache-mod_speedycgi.conf
 Patch0:		%{name}-DESTDIR.patch
-BuildRequires:	apache(EAPI)
+BuildRequires:	apache(EAPI)-devel
 BuildRequires:	rpm-perlprov >= 3.0.3-16
 BuildRequires:	perl >= 5.6
 %requires_eq	perl
