@@ -5,7 +5,7 @@ Summary:	Speed up perl CGI scripts by running them persistently
 Summary(pl):	Modu³ przyspieszaj±cy perlowe skrypty CGI
 Name:		perl-%{perlname}
 Version:	2.11
-Release:	6
+Release:	7
 License:	GPL
 Group:		Networking/Daemons
 URL:		http://daemoninc.com/SpeedyCGI/
@@ -73,8 +73,6 @@ install -d $RPM_BUILD_ROOT/%{perl_archlib} \
 install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd/mod_speedycgi.conf
 install mod_speedycgi/mod_speedycgi.so $RPM_BUILD_ROOT%{apache_moddir}
 
-gzip -9nf README docs/*.txt contrib/Mason-SpeedyCGI-HOWTO
-
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -92,7 +90,7 @@ fi
 %preun -n apache-mod_speedycgi
 if [ "$1" = "0" ]; then
 	%{_sbindir}/apxs -e -A -n speedycgi %{_libexecdir}/mod_speedycgi.so 1>&2
-	grep -v -q "^Include.*mod_speedycgi.conf" /etc/httpd/httpd.conf > \
+	grep -v "^Include.*mod_speedycgi.conf" /etc/httpd/httpd.conf > \
 		/etc/httpd/httpd.conf.tmp
 	mv -f /etc/httpd/httpd.conf.tmp /etc/httpd/httpd.conf
 	if [ -f /var/lock/subsys/httpd ]; then
@@ -102,7 +100,7 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc *.gz docs contrib
+%doc README docs contrib
 %{perl_sitelib}/CGI/*.pm
 %attr(755,root,root) %{_bindir}/speedy*
 
