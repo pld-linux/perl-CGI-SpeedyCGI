@@ -5,7 +5,7 @@ Summary:	Speed up perl CGI scripts by running them persistently
 Summary(pl):	Modu³ przyspieszaj±cy perlowe skrypty CGI
 Name:		perl-%{perlname}
 Version:	2.11
-Release:	5
+Release:	6
 License:	GPL
 Group:		Networking/Daemons
 URL:		http://daemoninc.com/SpeedyCGI/
