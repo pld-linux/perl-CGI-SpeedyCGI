@@ -11,6 +11,7 @@ Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
 Source0:	ftp://download.sourceforge.net/pub/sourceforge/speedycgi/%{perlname}-%{version}.tar.gz
 Source1:	apache-mod_speedycgi.conf
+Patch0:		%{name}-DESTDIR.patch
 BuildRequires:	apache(EAPI)
 BuildRequires:	rpm-perlprov >= 3.0.3-16
 BuildRequires:	perl >= 5.6
@@ -42,6 +43,7 @@ SpeedyCGI apache module.
 
 %prep
 %setup -q -n %{perlname}-%{version}
+%patch -p1
 
 %build
 perl Makefile.PL
