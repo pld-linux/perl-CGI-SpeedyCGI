@@ -77,7 +77,7 @@ install mod_speedycgi/mod_speedycgi.so $RPM_BUILD_ROOT%{apache_moddir}
 rm -rf $RPM_BUILD_ROOT
 
 %post -n apache-mod_speedycgi
-%{_sbindir}/apxs -e -a -n speedycgi %{_libexecdir}/mod_speedycgi.so 1>&2
+%{apxs} -e -a -n speedycgi %{_libexecdir}/mod_speedycgi.so 1>&2
 if [ -f /etc/httpd/httpd.conf ] && ! grep -q "^Include.*mod_speedycgi.conf" /etc/httpd/httpd.conf; then
 	echo "Include /etc/httpd/mod_speedycgi.conf" >> /etc/httpd/httpd.conf
 fi
@@ -89,7 +89,7 @@ fi
 
 %preun -n apache-mod_speedycgi
 if [ "$1" = "0" ]; then
-	%{_sbindir}/apxs -e -A -n speedycgi %{_libexecdir}/mod_speedycgi.so 1>&2
+	%{apxs} -e -A -n speedycgi %{_libexecdir}/mod_speedycgi.so 1>&2
 	grep -v "^Include.*mod_speedycgi.conf" /etc/httpd/httpd.conf > \
 		/etc/httpd/httpd.conf.tmp
 	mv -f /etc/httpd/httpd.conf.tmp /etc/httpd/httpd.conf
