@@ -48,9 +48,9 @@ SpeedyCGI apache module.
 perl Makefile.PL
 ( cd mod_speedycgi && perl Makefile.PL )
 
-%{__make} OPTIMIZE="%{?debug:-O0 -g}%{!?debug:$RPM_OPT_FLAGS}"
+%{__make} OPTIMIZE="%{rpmcflags}"
 %{__make} -C mod_speedycgi \
-	OPTIMIZE="%{?debug:-O0 -g}%{!?debug:$RPM_OPT_FLAGS}" \
+	OPTIMIZE="%{rpmcflags}" \
 	APXS="/usr/sbin/apxs"
 
 %install
