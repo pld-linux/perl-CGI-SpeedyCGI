@@ -1,15 +1,19 @@
+#
+# Conditional build:
+# _without_tests - do not perform "make test"
+#
 %include 	/usr/lib/rpm/macros.perl
-%define         perlname CGI-SpeedyCGI
-
+%define		pdir	CGI
+%define         pnam	SpeedyCGI
 Summary:	Speed up perl CGI scripts by running them persistently
 Summary(pl):	Modu³ przyspieszaj±cy perlowe skrypty CGI
-Name:		perl-%{perlname}
-Version:	2.11
-Release:	7
+Name:		perl-CGI-SpeedyCGI
+Version:	2.20
+Release:	1
 License:	GPL
 Group:		Networking/Daemons
 URL:		http://daemoninc.com/SpeedyCGI/
-Source0:	ftp://ftp.cpan.org/pub/CPAN/modules/by-module/CGI/%{perlname}-%{version}.tar.gz
+Source0:	ftp://ftp.cpan.org/pub/CPAN/modules/by-module/%{pdir}/%{pdir}-%{pnam}-%{version}.tar.gz
 Source1:	apache-mod_speedycgi.conf
 Patch0:		%{name}-DESTDIR.patch
 BuildRequires:	apache(EAPI)-devel
@@ -50,16 +54,20 @@ SpeedyCGI apache module.
 Modu³ apache SpeedyCGI.
 
 %prep
-%setup -q -n %{perlname}-%{version}
+%setup -q -n %{pdir}-%{pnam}-%{version}
 %patch -p1
 
 %build
-perl Makefile.PL
-( cd mod_speedycgi && perl Makefile.PL )
+perl Makefile.PL </dev/null
+cd mod_speedycgi && perl Makefile.PL
+cd ..
 
 %{__make} OPTIMIZE="%{rpmcflags}"
 %{__make} -C mod_speedycgi \
-	OPTIMIZE="%{rpmcflags}" \
+	OPTIMIZE="%{rpmcflags}"
+
+%{!?_without_tests:%{__make} test}
+
 APXS="%{_sbindir}/apxs"
 
 %install
