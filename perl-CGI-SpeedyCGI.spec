@@ -19,11 +19,15 @@ Patch0:		%{name}-DESTDIR.patch
 BuildRequires:	apache(EAPI)-devel
 BuildRequires:	rpm-perlprov >= 3.0.3-16
 BuildRequires:	perl >= 5.6
-Prereq:		/usr/sbin/apxs 
+Requires(post,preun):	/usr/sbin/apxs
+Requires(post,preun):	apache
+Requires(post,preun):	grep
+Requires(preun):	fileutils
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		apache_moddir	%(/usr/sbin/apxs -q LIBEXECDIR)
 %define		apxs		/usr/sbin/apxs
+%define		apache_moddir	%(/usr/sbin/apxs -q LIBEXECDIR)
+%define		httpdir		/home/services/httpd
 
 %description 
 SpeedyCGI is a way to run CGI perl scripts persistently, which usually
@@ -73,8 +77,8 @@ APXS="%{apxs}"
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT/%{perl_archlib} \
-	$RPM_BUILD_ROOT{%{apache_moddir},/home/httpd/speedy,%{_sysconfdir}/httpd}
+install -d $RPM_BUILD_ROOT%{perl_archlib} \
+	$RPM_BUILD_ROOT{%{apache_moddir},%{httpdir}/speedy,%{_sysconfdir}/httpd}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT 
@@ -86,7 +90,7 @@ install mod_speedycgi/mod_speedycgi.so $RPM_BUILD_ROOT%{apache_moddir}
 rm -rf $RPM_BUILD_ROOT
 
 %post -n apache-mod_speedycgi
-%{apxs} -e -a -n speedycgi %{_libexecdir}/mod_speedycgi.so 1>&2
+%{apxs} -e -a -n speedycgi %{apache_moddir}/mod_speedycgi.so 1>&2
 if [ -f /etc/httpd/httpd.conf ] && ! grep -q "^Include.*mod_speedycgi.conf" /etc/httpd/httpd.conf; then
 	echo "Include /etc/httpd/mod_speedycgi.conf" >> /etc/httpd/httpd.conf
 fi
@@ -98,7 +102,8 @@ fi
 
 %preun -n apache-mod_speedycgi
 if [ "$1" = "0" ]; then
-	%{apxs} -e -A -n speedycgi %{_libexecdir}/mod_speedycgi.so 1>&2
+	umask 027
+	%{apxs} -e -A -n speedycgi %{apache_moddir}/mod_speedycgi.so 1>&2
 	grep -v "^Include.*mod_speedycgi.conf" /etc/httpd/httpd.conf > \
 		/etc/httpd/httpd.conf.tmp
 	mv -f /etc/httpd/httpd.conf.tmp /etc/httpd/httpd.conf
@@ -116,5 +121,5 @@ fi
 %files -n apache-mod_speedycgi
 %defattr(644,root,root,755)
 %attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/httpd/mod_speedycgi.conf
-%{apache_moddir}/mod_speedycgi.so
-%dir /home/httpd/speedy
+%attr(755,root,root) %{apache_moddir}/mod_speedycgi.so
+%dir %{httpdir}
