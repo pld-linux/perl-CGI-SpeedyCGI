@@ -10,7 +10,7 @@ Summary:	Speed up perl CGI scripts by running them persistently
 Summary(pl):	Modu³ przyspieszaj±cy perlowe skrypty CGI
 Name:		perl-CGI-SpeedyCGI
 Version:	2.22
-Release:	2
+Release:	3
 License:	GPL v2+
 Group:		Networking/Daemons
 URL:		http://daemoninc.com/SpeedyCGI/
