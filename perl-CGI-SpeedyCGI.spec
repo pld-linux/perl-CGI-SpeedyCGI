@@ -8,13 +8,6 @@ Version:	2.11
 Release:	5
 License:	GPL
 Group:		Networking/Daemons
-Group(cs):	Sí»ové/Démoni
-Group(de):	Netzwerkwesen/Server
-Group(es):	Red/Servidores
-Group(fr):	Réseau/Serveurs
-Group(pl):	Sieciowe/Serwery
-Group(pt):	Rede/Servidores
-Group(ru):	óÅÔÅ×ÙÅ/äÅÍÏÎÙ
 URL:		http://daemoninc.com/SpeedyCGI/
 Source0:	ftp://ftp.perl.org/pub/CPAN/modules/by-module/CGI/%{perlname}-%{version}.tar.gz
 Source1:	apache-mod_speedycgi.conf
@@ -47,13 +40,6 @@ perla do ka¿dego uruchomienia skryptu.
 Summary:	SpeedyCGI apache module
 Summary(pl):	Modu³ apache SpeedyCGI
 Group:		Networking/Daemons
-Group(cs):	Sí»ové/Démoni
-Group(de):	Netzwerkwesen/Server
-Group(es):	Red/Servidores
-Group(fr):	Réseau/Serveurs
-Group(pl):	Sieciowe/Serwery
-Group(pt):	Rede/Servidores
-Group(ru):	óÅÔÅ×ÙÅ/äÅÍÏÎÙ
 Requires:	%{name} = %{version}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
