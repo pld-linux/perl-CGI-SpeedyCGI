@@ -11,7 +11,7 @@ Summary(pl):	Modu³ przyspieszaj±cy perlowe skrypty CGI
 Name:		perl-CGI-SpeedyCGI
 Version:	2.22
 Release:	1
-License:	GPL
+License:	GPL v2+
 Group:		Networking/Daemons
 URL:		http://daemoninc.com/SpeedyCGI/
 Source0:	http://www.cpan.org/modules/by-module/%{pdir}/%{pdir}-%{pnam}-%{version}.tar.gz
