@@ -30,7 +30,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		apache_moddir	%(/usr/sbin/apxs -q LIBEXECDIR)
 %define		httpdir		/home/services/httpd
 
-%description 
+%description
 SpeedyCGI is a way to run CGI perl scripts persistently, which usually
 makes them run much more quickly. After the script is initially run,
 instead of exiting, SpeedyCGI keeps the perl interpreter running in
@@ -82,7 +82,7 @@ install -d $RPM_BUILD_ROOT%{perl_archlib} \
 	$RPM_BUILD_ROOT{%{apache_moddir},%{httpdir}/speedy,%{_sysconfdir}/httpd}
 
 %{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT 
+	DESTDIR=$RPM_BUILD_ROOT
 
 install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd/mod_speedycgi.conf
 install mod_speedycgi/mod_speedycgi.so $RPM_BUILD_ROOT%{apache_moddir}
