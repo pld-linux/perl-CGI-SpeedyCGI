@@ -42,11 +42,11 @@ execution.
 
 %description -l pl
 SpeedyCGI to sposób na ci±g³e dzia³anie perlowych skryptów CGI, co
-zazwyczaj pododuje, ¿e uruchamiaj± siê du¿o szybciej. Po pocz±tkowym
-uruchomieniu skryptu, SpeedyCGI trzyma interpreter perla w pamiêci.
+zazwyczaj powoduje, ¿e uruchamiaj± siê du¿o szybciej. Po pocz±tkowym
+uruchomieniu skryptu, SpeedyCGI trzyma interpreter Perla w pamiêci.
 Przy kolejnych uruchomieniach ten interpreter jest wykorzystywany do
 obs³ugi kolejnych zleceñ, zamiast uruchamiania nowego interpretera
-perla do ka¿dego uruchomienia skryptu.
+Perla do ka¿dego uruchomienia skryptu.
 
 %package -n apache-mod_speedycgi
 Summary:	SpeedyCGI apache module
