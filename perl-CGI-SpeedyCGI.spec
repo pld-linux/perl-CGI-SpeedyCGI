@@ -4,19 +4,20 @@
 Summary:	Speed up perl CGI scripts by running them persistently
 Name:		perl-%{perlname}
 Version:	2.0.1
-Release:	1
-Copyright:	GPL
+Release:	2
+License:	GPL
 Group:		Networking/Daemons
+Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
 Source0:	http://daemoninc.com/speedycgi/%{perlname}-%{version}.tar.gz
 Source1:	apache-mod_speedycgi.conf
 BuildRequires:	rpm-perlprov >= 3.0.3-16
-BuildRequires:	perl >= 5
+BuildRequires:	perl >= 5.6
 %requires_eq	perl
 Requires:	%{perl_sitearch}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define	apache_moddir  %(/usr/sbin/apxs -q LIBEXECDIR)
+%define		apache_moddir	%(/usr/sbin/apxs -q LIBEXECDIR)
 
 %description 
 SpeedyCGI is a way to run CGI perl scripts persistently, which usually
@@ -29,12 +30,13 @@ execution.
 %package -n apache-mod_speedycgi
 Summary:	SpeedyCGI apache module
 Group:		Networking/Daemons
+Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
 Requires:	%{name} = %{version}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description -n apache-mod_speedycgi
-SpeedyCGI apache module. 
+SpeedyCGI apache module.
 
 %prep
 %setup -q -n %{perlname}-%{version}
@@ -43,27 +45,23 @@ SpeedyCGI apache module.
 perl Makefile.PL
 ( cd mod_speedycgi && perl Makefile.PL )
 
-%{__make} OPTIMIZE="$RPM_OPT_FLAGS"
-%{__make} -C mod_speedycgi OPTIMIZE="$RPM_OPT_FLAGS" APXS="/usr/sbin/apxs"
-
+%{__make} OPTIMIZE="%{?debug:-O -g}%{!?debug:$RPM_OPT_FLAGS}"
+%{__make} -C mod_speedycgi \
+	OPTIMIZE="%{?debug:-O -g}%{!?debug:$RPM_OPT_FLAGS}" \
+	APXS="/usr/sbin/apxs"
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT/%{perl_archlib}
+install -d $RPM_BUILD_ROOT/%{perl_archlib} \
+	$RPM_BUILD_ROOT{%{apache_moddir},/home/httpd/speedy,%{_sysconfdir}/httpd}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT 
-(
-  cd $RPM_BUILD_ROOT%{perl_sitearch}/auto/CGI/SpeedyCGI
-  sed -e "s#$RPM_BUILD_ROOT##" .packlist >.packlist.new
-  mv .packlist.new .packlist
-)
 
-install -d $RPM_BUILD_ROOT{%{apache_moddir},/home/httpd/speedy,%{_sysconfdir}/httpd}
 install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd/mod_speedycgi.conf
 install mod_speedycgi/mod_speedycgi.so $RPM_BUILD_ROOT%{apache_moddir}
+
 gzip -9nf README docs/*.txt contrib/Mason-SpeedyCGI-HOWTO
-strip --strip-unneeded $RPM_BUILD_ROOT{%{_bindir}/speedy*,%{apache_moddir}/*.so}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -83,17 +81,16 @@ fi
 %postun -n apache-mod_speedycgi
 HTTPDCONF=%{_sysconfdir}/httpd/httpd.conf
 grep -E -v "^Include.*mod_speedycgi.conf" $HTTPDCONF > $HTTPDCONF.tmp$$
-mv $HTTPDCONF.tmp$$ $HTTPDCONF
+mv -f $HTTPDCONF.tmp$$ $HTTPDCONF
 if [ -f /var/lock/subsys/httpd ]; then
         /etc/rc.d/init.d/httpd restart 1>&2
 fi
 
 %files
 %defattr(644,root,root,755)
+%doc *.gz docs contrib
 %{perl_sitelib}/CGI/*.pm
-%{perl_sitearch}/auto/CGI/SpeedyCGI
 %attr(755,root,root) %{_bindir}/speedy*
-%doc README.gz docs contrib
 
 %files -n apache-mod_speedycgi
 %defattr(644,root,root,755)
