@@ -3,13 +3,14 @@
 
 Summary:	Speed up perl CGI scripts by running them persistently
 Name:		perl-%{perlname}
-Version:	2.10
+Version:	2.11
 Release:	1
 License:	GPL
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
-Source0:	ftp://download.sourceforge.net/pub/sourceforge/speedycgi/%{perlname}-%{version}.tar.gz
+URL:		http://daemoninc.com/SpeedyCGI/
+Source0:	http://daemoninc.com/SpeedyCGI/%{perlname}-%{version}.tar.gz
 Source1:	apache-mod_speedycgi.conf
 Patch0:		%{name}-DESTDIR.patch
 BuildRequires:	apache(EAPI)-devel
