@@ -67,7 +67,8 @@ Modu³ apache SpeedyCGI.
 %patch1 -p1
 
 %build
-%{__perl} Makefile.PL </dev/null
+%{__perl} Makefile.PL </dev/null \
+	INSTALLDIRS=vendor
 cd mod_speedycgi && perl Makefile.PL
 cd ..
 
@@ -119,7 +120,7 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc README docs contrib
-%{perl_sitelib}/CGI/*.pm
+%{perl_vendorlib}/CGI/*.pm
 %attr(755,root,root) %{_bindir}/speedy*
 
 %files -n apache-mod_speedycgi
