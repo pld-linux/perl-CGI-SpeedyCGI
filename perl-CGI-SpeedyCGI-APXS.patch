@@ -1,0 +1,12 @@
+--- CGI-SpeedyCGI-2.22/mod_speedycgi/Makefile.tmpl	2004-04-11 05:18:55.000000000 +0000
++++ CGI-SpeedyCGI-2.22.mod/mod_speedycgi/Makefile.tmpl	2004-04-11 05:23:00.000000000 +0000
+@@ -24,7 +24,9 @@
+ ##
+ 
+ #   the used tools
++ifndef APXS
+ APXS=apxs
++endif
+ APACHECTL=apachectl
+ 
+ #   additional defines, includes and libraries

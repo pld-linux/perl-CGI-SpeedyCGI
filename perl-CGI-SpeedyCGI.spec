@@ -1,6 +1,7 @@
 #
 # Conditional build:
 # _without_tests - do not perform "make test"
+# _with_apache1 - use apache1 instead of apache (apxs1 instead apxs)
 #
 %include 	/usr/lib/rpm/macros.perl
 %define		pdir	CGI
@@ -8,26 +9,27 @@
 Summary:	Speed up perl CGI scripts by running them persistently
 Summary(pl):	Modu³ przyspieszaj±cy perlowe skrypty CGI
 Name:		perl-CGI-SpeedyCGI
-Version:	2.21
-Release:	3
+Version:	2.22
+Release:	1
 License:	GPL
 Group:		Networking/Daemons
 URL:		http://daemoninc.com/SpeedyCGI/
 Source0:	http://www.cpan.org/modules/by-module/%{pdir}/%{pdir}-%{pnam}-%{version}.tar.gz
-# Source0-md5:	ff43eaa899c5ff38f208ed692ab12bb4
+# Source0-md5:	2f80df78874e3efa80f180923c4967a1
 Source1:	apache-mod_speedycgi.conf
 Patch0:		%{name}-DESTDIR.patch
+Patch1:		%{name}-APXS.patch
 BuildRequires:	apache(EAPI)-devel
 BuildRequires:	rpm-perlprov >= 3.0.3-16
 BuildRequires:	perl-devel >= 5.6
-Requires(post,preun):	/usr/sbin/apxs
-Requires(post,preun):	apache
+Requires(post,preun):	/usr/sbin/%{?_with_apache1:apxs1}%{!?_with_apache1:apxs}
+Requires(post,preun):	%{?_with_apache1:apache1}%{!?_with_apache1:apache}
 Requires(post,preun):	grep
 Requires(preun):	fileutils
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		apxs		/usr/sbin/apxs
-%define		apache_moddir	%(/usr/sbin/apxs -q LIBEXECDIR)
+%define		apxs		/usr/sbin/%{?_with_apache1:apxs1}%{!?_with_apache1:apxs}
+%define		apache_moddir	%(/usr/sbin/%{?_with_apache1:apxs1}%{!?_with_apache1:apxs} -q LIBEXECDIR)
 %define		httpdir		/home/services/httpd
 
 %description
@@ -61,7 +63,8 @@ Modu³ apache SpeedyCGI.
 
 %prep
 %setup -q -n %{pdir}-%{pnam}-%{version}
-%patch -p1
+%patch0 -p1
+%patch1 -p1
 
 %build
 %{__perl} Makefile.PL </dev/null
@@ -69,7 +72,7 @@ cd mod_speedycgi && perl Makefile.PL
 cd ..
 
 %{__make} OPTIMIZE="%{rpmcflags}"
-%{__make} -C mod_speedycgi \
+%{__make} -C mod_speedycgi APXS="%{apxs}" \
 	OPTIMIZE="%{rpmcflags}"
 
 %{!?_without_tests:%{__make} test}
