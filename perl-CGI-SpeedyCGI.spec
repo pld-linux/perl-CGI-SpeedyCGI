@@ -11,7 +11,7 @@ Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
 URL:		http://daemoninc.com/SpeedyCGI/
-Source0:	http://daemoninc.com/SpeedyCGI/%{perlname}-%{version}.tar.gz
+Source0:	ftp://ftp.perl.org/pub/CPAN/modules/by-module/CGI/%{perlname}-%{version}.tar.gz
 Source1:	apache-mod_speedycgi.conf
 Patch0:		%{name}-DESTDIR.patch
 BuildRequires:	apache(EAPI)-devel
