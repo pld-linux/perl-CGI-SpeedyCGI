@@ -3,18 +3,20 @@
 
 Summary:	Speed up perl CGI scripts by running them persistently
 Name:		perl-%{perlname}
-Version:	2.0.1
-Release:	2
+Version:	2.02
+Release:	1
 License:	GPL
 Group:		Networking/Daemons
 Group(de):	Netzwerkwesen/Server
 Group(pl):	Sieciowe/Serwery
-Source0:	http://daemoninc.com/speedycgi/%{perlname}-%{version}.tar.gz
+Source0:	ftp://download.sourceforge.net/pub/sourceforge/speedycgi/%{perlname}-%{version}.tar.gz
 Source1:	apache-mod_speedycgi.conf
+BuildRequires:	apache(EAPI)
 BuildRequires:	rpm-perlprov >= 3.0.3-16
 BuildRequires:	perl >= 5.6
 %requires_eq	perl
 Requires:	%{perl_sitearch}
+Prereq:		/usr/sbin/apxs 
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		apache_moddir	%(/usr/sbin/apxs -q LIBEXECDIR)
@@ -67,23 +69,25 @@ gzip -9nf README docs/*.txt contrib/Mason-SpeedyCGI-HOWTO
 rm -rf $RPM_BUILD_ROOT
 
 %post -n apache-mod_speedycgi
-HTTPDCONF=%{_sysconfdir}/httpd/httpd.conf
-if [ -f $HTTPDCONF ] && \
-   ! grep -q "^Include.*/mod_speedycgi.conf" $HTTPDCONF; then
-	echo "Include /etc/httpd/mod_speedycgi.conf" >> $HTTPDCONF
+%{_sbindir}/apxs -e -a -n proxy %{_libexecdir}/mod_speedycgi.so 1>&2
+if [ -f /etc/httpd/httpd.conf ] && ! grep -q "^Include.*mod_speedycgi.conf" /etc/httpd/httpd.conf; then
+	echo "Include /etc/httpd/mod_speedycgi.conf" >> /etc/httpd/httpd.conf
 fi
 if [ -f /var/lock/subsys/httpd ]; then
-        /etc/rc.d/init.d/httpd restart 1>&2
+	/etc/rc.d/init.d/httpd restart 1>&2
 else
-        echo "Run \"/etc/rc.d/init.d/httpd start\" to start apache http daemon."
+	echo "Run \"/etc/rc.d/init.d/httpd start\" to start apache http daemon."
 fi
 
-%postun -n apache-mod_speedycgi
-HTTPDCONF=%{_sysconfdir}/httpd/httpd.conf
-grep -E -v "^Include.*mod_speedycgi.conf" $HTTPDCONF > $HTTPDCONF.tmp$$
-mv -f $HTTPDCONF.tmp$$ $HTTPDCONF
-if [ -f /var/lock/subsys/httpd ]; then
-        /etc/rc.d/init.d/httpd restart 1>&2
+%preun -n apache-mod_speedycgi
+if [ "$1" = "0" ]; then
+	%{_sbindir}/apxs -e -A -n proxy %{_libexecdir}/mod_speedycgi.so 1>&2
+	grep -v -q "^Include.*mod_speedycgi.conf" /etc/httpd/httpd.conf > \
+		/etc/httpd/httpd.conf.tmp
+	mv -f /etc/httpd/httpd.conf.tmp /etc/httpd/httpd.conf
+	if [ -f /var/lock/subsys/httpd ]; then
+		/etc/rc.d/init.d/httpd restart 1>&2
+	fi
 fi
 
 %files
