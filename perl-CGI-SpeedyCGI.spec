@@ -17,7 +17,6 @@ BuildRequires:	apache(EAPI)-devel
 BuildRequires:	rpm-perlprov >= 3.0.3-16
 BuildRequires:	perl >= 5.6
 Prereq:		/usr/sbin/apxs 
-BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		apache_moddir	%(/usr/sbin/apxs -q LIBEXECDIR)
