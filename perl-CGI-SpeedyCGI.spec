@@ -14,6 +14,7 @@ License:	GPL
 Group:		Networking/Daemons
 URL:		http://daemoninc.com/SpeedyCGI/
 Source0:	http://www.cpan.org/modules/by-module/%{pdir}/%{pdir}-%{pnam}-%{version}.tar.gz
+# Source0-md5:	ff43eaa899c5ff38f208ed692ab12bb4
 Source1:	apache-mod_speedycgi.conf
 Patch0:		%{name}-DESTDIR.patch
 BuildRequires:	apache(EAPI)-devel
