@@ -6,7 +6,7 @@ diff -Nru CGI-SpeedyCGI-2.02/mod_speedycgi/Makefile.tmpl CGI-SpeedyCGI-2.02.new/
  #   install the shared object file into Apache 
  install: all
 -	$(APXS) -i -a -n 'speedycgi' mod_speedycgi.so
-+	install $(DESTDIR)`/usr/sbin/apxs -q LIBEXECDIR`
++	install -d $(DESTDIR)`/usr/sbin/apxs -q LIBEXECDIR`
 +	install 'speedycgi' $(DESTDIR)`/usr/sbin/apxs -q LIBEXECDIR`/mod_speedycgi.so
  
  #   cleanup
