@@ -9,7 +9,7 @@ Summary:	Speed up perl CGI scripts by running them persistently
 Summary(pl):	Modu³ przyspieszaj±cy perlowe skrypty CGI
 Name:		perl-CGI-SpeedyCGI
 Version:	2.20
-Release:	1
+Release:	2
 License:	GPL
 Group:		Networking/Daemons
 URL:		http://daemoninc.com/SpeedyCGI/
@@ -23,6 +23,7 @@ Prereq:		/usr/sbin/apxs
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		apache_moddir	%(/usr/sbin/apxs -q LIBEXECDIR)
+%define		apxs		/usr/sbin/apxs
 
 %description 
 SpeedyCGI is a way to run CGI perl scripts persistently, which usually
@@ -68,7 +69,7 @@ cd ..
 
 %{!?_without_tests:%{__make} test}
 
-APXS="%{_sbindir}/apxs"
+APXS="%{apxs}"
 
 %install
 rm -rf $RPM_BUILD_ROOT
