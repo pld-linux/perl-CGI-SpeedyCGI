@@ -1,0 +1,13 @@
+diff -Nru CGI-SpeedyCGI-2.02/mod_speedycgi/Makefile.tmpl CGI-SpeedyCGI-2.02.new/mod_speedycgi/Makefile.tmpl
+--- CGI-SpeedyCGI-2.02/mod_speedycgi/Makefile.tmpl	Fri Dec 15 23:12:18 2000
++++ CGI-SpeedyCGI-2.02.new/mod_speedycgi/Makefile.tmpl	Thu Dec 28 05:51:04 2000
+@@ -44,7 +44,8 @@
+ 
+ #   install the shared object file into Apache 
+ install: all
+-	$(APXS) -i -a -n 'speedycgi' mod_speedycgi.so
++	$(INSTALL) $(DESTDIR)`/usr/sbin/apxs -q LIBEXECDIR`
++	$(INSTALL) 'speedycgi' $(DESTDIR)`/usr/sbin/apxs -q LIBEXECDIR`/mod_speedycgi.so
+ 
+ #   cleanup
+ clean:
