@@ -72,7 +72,8 @@ Modu³ apache SpeedyCGI.
 cd mod_speedycgi && perl Makefile.PL
 cd ..
 
-%{__make} OPTIMIZE="%{rpmcflags}"
+%{__make} \
+	OPTIMIZE="%{rpmcflags}"
 %{__make} -C mod_speedycgi APXS="%{apxs}" \
 	OPTIMIZE="%{rpmcflags}"
 
