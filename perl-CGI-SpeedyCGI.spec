@@ -8,8 +8,13 @@ Version:	2.11
 Release:	5
 License:	GPL
 Group:		Networking/Daemons
+Group(cs):	SÌªovÈ/DÈmoni
 Group(de):	Netzwerkwesen/Server
+Group(es):	Red/Servidores
+Group(fr):	RÈseau/Serveurs
 Group(pl):	Sieciowe/Serwery
+Group(pt):	Rede/Servidores
+Group(ru):	Û≈‘≈◊Ÿ≈/‰≈ÕœŒŸ
 URL:		http://daemoninc.com/SpeedyCGI/
 Source0:	ftp://ftp.perl.org/pub/CPAN/modules/by-module/CGI/%{perlname}-%{version}.tar.gz
 Source1:	apache-mod_speedycgi.conf
@@ -42,8 +47,13 @@ perla do kaødego uruchomienia skryptu.
 Summary:	SpeedyCGI apache module
 Summary(pl):	Modu≥ apache SpeedyCGI
 Group:		Networking/Daemons
+Group(cs):	SÌªovÈ/DÈmoni
 Group(de):	Netzwerkwesen/Server
+Group(es):	Red/Servidores
+Group(fr):	RÈseau/Serveurs
 Group(pl):	Sieciowe/Serwery
+Group(pt):	Rede/Servidores
+Group(ru):	Û≈‘≈◊Ÿ≈/‰≈ÕœŒŸ
 Requires:	%{name} = %{version}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -64,7 +74,7 @@ perl Makefile.PL
 %{__make} OPTIMIZE="%{rpmcflags}"
 %{__make} -C mod_speedycgi \
 	OPTIMIZE="%{rpmcflags}" \
-	APXS="/usr/sbin/apxs"
+APXS="%{_sbindir}/apxs"
 
 %install
 rm -rf $RPM_BUILD_ROOT
