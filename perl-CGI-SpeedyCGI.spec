@@ -21,7 +21,7 @@ Patch0:		%{name}-DESTDIR.patch
 Patch1:		%{name}-APXS.patch
 BuildRequires:	apache(EAPI)-devel
 BuildRequires:	rpm-perlprov >= 3.0.3-16
-BuildRequires:	perl-devel >= 5.6
+BuildRequires:	perl-devel >= 1:5.8.0
 Requires(post,preun):	/usr/sbin/apxs%{?with_apache1:1}
 Requires(post,preun):	apache%{?with_apache1:1}%
 Requires(post,preun):	grep
