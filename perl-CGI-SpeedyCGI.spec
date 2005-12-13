@@ -24,8 +24,8 @@ Source1:	apache-mod_speedycgi.conf
 Patch0:		%{name}-DESTDIR.patch
 Patch1:		%{name}-APXS.patch
 BuildRequires:	apache%{?with_apache1:1}-devel
-BuildRequires:	rpm-perlprov >= 3.0.3-16
 BuildRequires:	perl-devel >= 1:5.8.0
+BuildRequires:	rpm-perlprov >= 3.0.3-16
 Requires(post,preun):	/usr/sbin/apxs%{?with_apache1:1}
 Requires(post,preun):	apache%{?with_apache1:1}
 Requires(post,preun):	grep
@@ -131,6 +131,6 @@ fi
 
 %files -n apache-mod_speedycgi
 %defattr(644,root,root,755)
-%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/mod_speedycgi.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/mod_speedycgi.conf
 %attr(755,root,root) %{_pkglibdir}/mod_speedycgi.so
 %dir %{httpdir}
