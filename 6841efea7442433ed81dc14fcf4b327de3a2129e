@@ -1,0 +1,2 @@
+- don't clear httpd.conf when uninstalling mod_speedycgi
+- new %doc, release 7
