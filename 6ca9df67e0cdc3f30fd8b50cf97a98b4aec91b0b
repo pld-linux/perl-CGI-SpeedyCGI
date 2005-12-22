@@ -1,0 +1,2 @@
+- release 2,
+- fixed http://bugs.pld.org.pl/?bug=368: added missing %{apxs} macro definition.
