@@ -1,12 +1,10 @@
-#
-# TODO:
-# - build apache1-mod_* for apache1 and apache-mod_* for apache2
-#
 # Conditional build:
 %bcond_without	tests	# do not perform "make test"
-%bcond_without	apache1	# do not use apache1 instead of apache (apxs1 instead apxs)
+%bcond_without	apache1	# skip building of apache1 module
+%bcond_with	apache2	# build apache2 module (missing APR_BRIGADE_FOREACH macro)
 #
-%define	apxs	/usr/sbin/apxs%{?with_apache1:1}
+%define	apxs	/usr/sbin/apxs
+%define	apxs1	/usr/sbin/apxs1
 %include 	/usr/lib/rpm/macros.perl
 %define		pdir	CGI
 %define		pnam	SpeedyCGI
@@ -14,7 +12,7 @@ Summary:	Speed up perl CGI scripts by running them persistently
 Summary(pl):	Modu³ przyspieszaj±cy perlowe skrypty CGI
 Name:		perl-CGI-SpeedyCGI
 Version:	2.22
-Release:	6.1
+Release:	7
 License:	GPL v2+
 Group:		Networking/Daemons
 URL:		http://daemoninc.com/SpeedyCGI/
@@ -23,19 +21,23 @@ Source0:	http://www.cpan.org/modules/by-module/%{pdir}/%{pdir}-%{pnam}-%{version
 Source1:	apache-mod_speedycgi.conf
 Patch0:		%{name}-DESTDIR.patch
 Patch1:		%{name}-APXS.patch
-BuildRequires:	apache%{?with_apache1:1}-devel
+%{?with_apache2:BuildRequires:	apache-devel}
+%{?with_apache1:BuildRequires:	apache1-devel}
 BuildRequires:	perl-devel >= 1:5.8.0
 BuildRequires:	rpm-perlprov >= 3.0.3-16
-Requires(post,preun):	/usr/sbin/apxs%{?with_apache1:1}
-Requires(post,preun):	apache%{?with_apache1:1}
-Requires(post,preun):	grep
-Requires(preun):	fileutils
 Requires:	perl(DynaLoader) = %(%{__perl} -MDynaLoader -e 'print DynaLoader->VERSION')
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		_pkglibdir	%(%{apxs} -q LIBEXECDIR)
-%define		_sysconfdir	%(%{apxs} -q SYSCONFDIR)
+%if %{with apache2}
+%define		_pkglibdir	%(%{apxs} -q LIBEXECDIR 2>/dev/null)
+%define		_sysconfdir	%(%{apxs} -q SYSCONFDIR 2>/dev/null)
 %define		httpdir		/home/services/httpd
+%endif
+%if %{with apache1}
+%define		_pkglibdir1	%(%{apxs1} -q LIBEXECDIR 2>/dev/null)
+%define		_sysconfdir1	%(%{apxs1} -q SYSCONFDIR 2>/dev/null)
+%define		httpdir1		/home/services/apache
+%endif
 
 %description
 SpeedyCGI is a way to run CGI perl scripts persistently, which usually
@@ -57,13 +59,28 @@ Perla do ka¿dego uruchomienia skryptu.
 Summary:	SpeedyCGI apache module
 Summary(pl):	Modu³ apache SpeedyCGI
 Group:		Networking/Daemons
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
+Requires:	apache(modules-api) = %apache_modules_api
+Requires:	apache >= 2.0.36
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description -n apache-mod_speedycgi
 SpeedyCGI apache module.
 
 %description -n apache-mod_speedycgi -l pl
+Modu³ apache SpeedyCGI.
+
+%package -n apache1-mod_speedycgi
+Summary:	SpeedyCGI apache module
+Summary(pl):	Modu³ apache SpeedyCGI
+Group:		Networking/Daemons
+Requires:	%{name} = %{version}-%{release}
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%description -n apache1-mod_speedycgi
+SpeedyCGI apache module.
+
+%description -n apache1-mod_speedycgi -l pl
 Modu³ apache SpeedyCGI.
 
 %prep
@@ -74,52 +91,65 @@ Modu³ apache SpeedyCGI.
 %build
 %{__perl} Makefile.PL </dev/null \
 	INSTALLDIRS=vendor
-cd mod_speedycgi && perl Makefile.PL
-cd ..
+%{?with_apache1:cd mod_speedycgi && perl Makefile.PL && cd ..}
+%{?with_apache2:cd mod_speedycgi2 && perl Makefile.PL && cd ..}
 
 %{__make} \
 	OPTIMIZE="%{rpmcflags}"
-%{__make} -C mod_speedycgi APXS="%{apxs}" \
+
+%if %{with apache1}
+%{__make} -C mod_speedycgi APXS="%{apxs1}" \
 	OPTIMIZE="%{rpmcflags}"
+%endif
+%if %{with apache2}
+%{__make} -C mod_speedycgi2 APXS="%{apxs}" \
+	OPTIMIZE="%{rpmcflags}"
+%endif
 
 %{?with_test:%{__make} test}
 
-APXS="%{apxs}"
-
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT%{perl_archlib} \
-	$RPM_BUILD_ROOT{%{_pkglibdir},%{httpdir}/speedy,%{_sysconfdir}}
+install -d $RPM_BUILD_ROOT%{perl_archlib}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/mod_speedycgi.conf
-install mod_speedycgi/mod_speedycgi.so $RPM_BUILD_ROOT%{_pkglibdir}
+%if %{with apache1}
+install -d $RPM_BUILD_ROOT{%{_pkglibdir1},%{httpdir1}/speedy,%{_sysconfdir1}/conf.d}
+install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir1}/conf.d/mod_speedycgi.conf
+install mod_speedycgi/mod_speedycgi.so $RPM_BUILD_ROOT%{_pkglibdir1}
+%endif
+%if %{with apache2}
+install -d $RPM_BUILD_ROOT{%{_pkglibdir},%{httpdir}/speedy,%{_sysconfdir}/httpd.conf}
+install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf/90_mod_speedycgi.conf
+install mod_speedycgi2/mod_speedycgi.so $RPM_BUILD_ROOT%{_pkglibdir}
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post -n apache-mod_speedycgi
-%{apxs} -e -a -n speedycgi %{_pkglibdir}/mod_speedycgi.so 1>&2
-if [ -f /etc/httpd/httpd.conf ] && ! grep -q "^Include.*mod_speedycgi.conf" /etc/httpd/httpd.conf; then
-	echo "Include /etc/httpd/mod_speedycgi.conf" >> /etc/httpd/httpd.conf
-fi
 if [ -f /var/lock/subsys/httpd ]; then
 	/etc/rc.d/init.d/httpd restart 1>&2
-else
-	echo "Run \"/etc/rc.d/init.d/httpd start\" to start apache HTTP daemon."
+fi
+
+%post -n apache1-mod_speedycgi
+if [ -f /var/lock/subsys/apache ]; then
+	/etc/rc.d/init.d/apache restart 1>&2
 fi
 
 %preun -n apache-mod_speedycgi
 if [ "$1" = "0" ]; then
-	umask 027
-	%{apxs} -e -A -n speedycgi %{_pkglibdir}/mod_speedycgi.so 1>&2
-	grep -v "^Include.*mod_speedycgi.conf" /etc/httpd/httpd.conf > \
-		/etc/httpd/httpd.conf.tmp
-	mv -f /etc/httpd/httpd.conf.tmp /etc/httpd/httpd.conf
 	if [ -f /var/lock/subsys/httpd ]; then
 		/etc/rc.d/init.d/httpd restart 1>&2
+	fi
+fi
+
+%preun -n apache1-mod_speedycgi
+if [ "$1" = "0" ]; then
+	if [ -f /var/lock/subsys/apache ]; then
+		/etc/rc.d/init.d/apache restart 1>&2
 	fi
 fi
 
@@ -129,8 +159,18 @@ fi
 %{perl_vendorlib}/CGI/*.pm
 %attr(755,root,root) %{_bindir}/speedy*
 
+%if %{with apache1}
+%files -n apache1-mod_speedycgi
+%defattr(644,root,root,755)
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir1}/conf.d/*mod_speedycgi.conf
+%attr(755,root,root) %{_pkglibdir1}/mod_speedycgi.so
+%dir %{httpdir1}/*
+%endif
+
+%if %{with apache2}
 %files -n apache-mod_speedycgi
 %defattr(644,root,root,755)
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/mod_speedycgi.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf/*mod_speedycgi.conf
 %attr(755,root,root) %{_pkglibdir}/mod_speedycgi.so
-%dir %{httpdir}
+%dir %{httpdir}/*
+%endif
