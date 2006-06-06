@@ -1,7 +1,7 @@
 # Conditional build:
 %bcond_without	tests	# do not perform "make test"
 %bcond_without	apache1	# skip building of apache1 module
-%bcond_with	apache2	# build apache2 module (missing APR_BRIGADE_FOREACH macro)
+%bcond_without	apache2	# build apache2 module (missing APR_BRIGADE_FOREACH macro)
 #
 %define	apxs	/usr/sbin/apxs
 %define	apxs1	/usr/sbin/apxs1
@@ -12,7 +12,7 @@ Summary:	Speed up perl CGI scripts by running them persistently
 Summary(pl):	Modu³ przyspieszaj±cy perlowe skrypty CGI
 Name:		perl-CGI-SpeedyCGI
 Version:	2.22
-Release:	8
+Release:	9
 License:	GPL v2+
 Group:		Networking/Daemons
 URL:		http://daemoninc.com/SpeedyCGI/
@@ -21,6 +21,7 @@ Source0:	http://www.cpan.org/modules/by-module/%{pdir}/%{pdir}-%{pnam}-%{version
 Source1:	apache-mod_speedycgi.conf
 Patch0:		%{name}-DESTDIR.patch
 Patch1:		%{name}-APXS.patch
+Patch2:		%{name}-apr.patch
 %{?with_apache2:BuildRequires:	apache-devel}
 %{?with_apache1:BuildRequires:	apache1-devel}
 BuildRequires:	perl-devel >= 1:5.8.0
@@ -87,6 +88,7 @@ Modu³ apache SpeedyCGI.
 %setup -q -n %{pdir}-%{pnam}-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 %{__perl} Makefile.PL </dev/null \
@@ -125,6 +127,8 @@ install -d $RPM_BUILD_ROOT{%{_pkglibdir},%{httpdir}/speedy,%{_sysconfdir}/httpd.
 install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf/90_mod_speedycgi.conf
 install mod_speedycgi2/mod_speedycgi.so $RPM_BUILD_ROOT%{_pkglibdir}
 %endif
+
+ln -s speedy $RPM_BUILD_ROOT%{_bindir}/speedycgi
 
 %clean
 rm -rf $RPM_BUILD_ROOT
