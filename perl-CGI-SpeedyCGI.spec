@@ -27,6 +27,7 @@ URL:		http://daemoninc.com/SpeedyCGI/
 %{?with_apache1:BuildRequires:	apache1-devel}
 BuildRequires:	perl-devel >= 1:5.8.0
 BuildRequires:	rpm-perlprov >= 3.0.3-16
+BuildRequires:	rpmbuild(macros) >= 1.268
 Requires:	perl(DynaLoader) = %(%{__perl} -MDynaLoader -e 'print DynaLoader->VERSION')
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -63,7 +64,6 @@ Summary(pl):	Modu³ apache SpeedyCGI
 Group:		Networking/Daemons
 Requires:	%{name} = %{version}-%{release}
 Requires:	apache(modules-api) = %apache_modules_api
-Requires:	apache >= 2.0.36
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description -n apache-mod_speedycgi
@@ -77,6 +77,7 @@ Summary:	SpeedyCGI apache module
 Summary(pl):	Modu³ apache SpeedyCGI
 Group:		Networking/Daemons
 Requires:	%{name} = %{version}-%{release}
+Requires:	apache1 >= 1.3.33-2
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description -n apache1-mod_speedycgi
@@ -135,27 +136,19 @@ ln -s speedy $RPM_BUILD_ROOT%{_bindir}/speedycgi
 rm -rf $RPM_BUILD_ROOT
 
 %post -n apache-mod_speedycgi
-if [ -f /var/lock/subsys/httpd ]; then
-	/etc/rc.d/init.d/httpd restart 1>&2
-fi
+%service -q httpd restart
 
 %post -n apache1-mod_speedycgi
-if [ -f /var/lock/subsys/apache ]; then
-	/etc/rc.d/init.d/apache restart 1>&2
-fi
+%service -q apache restart
 
 %preun -n apache-mod_speedycgi
 if [ "$1" = "0" ]; then
-	if [ -f /var/lock/subsys/httpd ]; then
-		/etc/rc.d/init.d/httpd restart 1>&2
-	fi
+	%service -q httpd restart
 fi
 
 %preun -n apache1-mod_speedycgi
 if [ "$1" = "0" ]; then
-	if [ -f /var/lock/subsys/apache ]; then
-		/etc/rc.d/init.d/apache restart 1>&2
-	fi
+	%service -q apache restart
 fi
 
 %files
