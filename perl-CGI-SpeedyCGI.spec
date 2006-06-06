@@ -1,7 +1,8 @@
+#
 # Conditional build:
 %bcond_without	tests	# do not perform "make test"
-%bcond_without	apache1	# skip building of apache1 module
-%bcond_without	apache2	# build apache2 module (missing APR_BRIGADE_FOREACH macro)
+%bcond_without	apache1	# don't build apache1 module
+%bcond_without	apache2	# don't build apache2 module
 #
 %define	apxs	/usr/sbin/apxs
 %define	apxs1	/usr/sbin/apxs1
@@ -15,13 +16,13 @@ Version:	2.22
 Release:	9
 License:	GPL v2+
 Group:		Networking/Daemons
-URL:		http://daemoninc.com/SpeedyCGI/
 Source0:	http://www.cpan.org/modules/by-module/%{pdir}/%{pdir}-%{pnam}-%{version}.tar.gz
 # Source0-md5:	2f80df78874e3efa80f180923c4967a1
 Source1:	apache-mod_speedycgi.conf
 Patch0:		%{name}-DESTDIR.patch
 Patch1:		%{name}-APXS.patch
 Patch2:		%{name}-apr.patch
+URL:		http://daemoninc.com/SpeedyCGI/
 %{?with_apache2:BuildRequires:	apache-devel}
 %{?with_apache1:BuildRequires:	apache1-devel}
 BuildRequires:	perl-devel >= 1:5.8.0
