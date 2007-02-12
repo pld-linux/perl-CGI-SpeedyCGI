@@ -10,7 +10,7 @@
 %define		pdir	CGI
 %define		pnam	SpeedyCGI
 Summary:	Speed up perl CGI scripts by running them persistently
-Summary(pl):	Modu≥ przyspieszaj±cy perlowe skrypty CGI
+Summary(pl.UTF-8):   Modu≈Ç przyspieszajƒÖcy perlowe skrypty CGI
 Name:		perl-CGI-SpeedyCGI
 Version:	2.22
 Release:	10
@@ -50,17 +50,17 @@ memory. During subsequent runs, this interpreter is used to handle new
 requests, instead of starting a new perl interpreter for each
 execution.
 
-%description -l pl
-SpeedyCGI to sposÛb na ci±g≥e dzia≥anie perlowych skryptÛw CGI, co
-zazwyczaj powoduje, øe uruchamiaj± siÍ duøo szybciej. Po pocz±tkowym
-uruchomieniu skryptu, SpeedyCGI trzyma interpreter Perla w pamiÍci.
+%description -l pl.UTF-8
+SpeedyCGI to spos√≥b na ciƒÖg≈Çe dzia≈Çanie perlowych skrypt√≥w CGI, co
+zazwyczaj powoduje, ≈ºe uruchamiajƒÖ siƒô du≈ºo szybciej. Po poczƒÖtkowym
+uruchomieniu skryptu, SpeedyCGI trzyma interpreter Perla w pamiƒôci.
 Przy kolejnych uruchomieniach ten interpreter jest wykorzystywany do
-obs≥ugi kolejnych zleceÒ, zamiast uruchamiania nowego interpretera
-Perla do kaødego uruchomienia skryptu.
+obs≈Çugi kolejnych zlece≈Ñ, zamiast uruchamiania nowego interpretera
+Perla do ka≈ºdego uruchomienia skryptu.
 
 %package -n apache-mod_speedycgi
 Summary:	SpeedyCGI apache module
-Summary(pl):	Modu≥ apache SpeedyCGI
+Summary(pl.UTF-8):   Modu≈Ç apache SpeedyCGI
 Group:		Networking/Daemons
 Requires:	%{name} = %{version}-%{release}
 Requires:	apache(modules-api) = %apache_modules_api
@@ -69,12 +69,12 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %description -n apache-mod_speedycgi
 SpeedyCGI apache module.
 
-%description -n apache-mod_speedycgi -l pl
-Modu≥ apache SpeedyCGI.
+%description -n apache-mod_speedycgi -l pl.UTF-8
+Modu≈Ç apache SpeedyCGI.
 
 %package -n apache1-mod_speedycgi
 Summary:	SpeedyCGI apache module
-Summary(pl):	Modu≥ apache SpeedyCGI
+Summary(pl.UTF-8):   Modu≈Ç apache SpeedyCGI
 Group:		Networking/Daemons
 Requires:	%{name} = %{version}-%{release}
 Requires:	apache1 >= 1.3.33-2
@@ -83,8 +83,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %description -n apache1-mod_speedycgi
 SpeedyCGI apache module.
 
-%description -n apache1-mod_speedycgi -l pl
-Modu≥ apache SpeedyCGI.
+%description -n apache1-mod_speedycgi -l pl.UTF-8
+Modu≈Ç apache SpeedyCGI.
 
 %prep
 %setup -q -n %{pdir}-%{pnam}-%{version}
