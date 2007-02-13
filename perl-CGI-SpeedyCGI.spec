@@ -10,7 +10,7 @@
 %define		pdir	CGI
 %define		pnam	SpeedyCGI
 Summary:	Speed up perl CGI scripts by running them persistently
-Summary(pl.UTF-8):   Moduł przyspieszający perlowe skrypty CGI
+Summary(pl.UTF-8):	Moduł przyspieszający perlowe skrypty CGI
 Name:		perl-CGI-SpeedyCGI
 Version:	2.22
 Release:	10
@@ -60,7 +60,7 @@ Perla do każdego uruchomienia skryptu.
 
 %package -n apache-mod_speedycgi
 Summary:	SpeedyCGI apache module
-Summary(pl.UTF-8):   Moduł apache SpeedyCGI
+Summary(pl.UTF-8):	Moduł apache SpeedyCGI
 Group:		Networking/Daemons
 Requires:	%{name} = %{version}-%{release}
 Requires:	apache(modules-api) = %apache_modules_api
@@ -74,7 +74,7 @@ Moduł apache SpeedyCGI.
 
 %package -n apache1-mod_speedycgi
 Summary:	SpeedyCGI apache module
-Summary(pl.UTF-8):   Moduł apache SpeedyCGI
+Summary(pl.UTF-8):	Moduł apache SpeedyCGI
 Group:		Networking/Daemons
 Requires:	%{name} = %{version}-%{release}
 Requires:	apache1 >= 1.3.33-2
