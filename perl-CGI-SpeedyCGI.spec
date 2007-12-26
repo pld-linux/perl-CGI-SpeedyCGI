@@ -4,8 +4,8 @@
 %bcond_without	apache1	# don't build apache1 module
 %bcond_without	apache2	# don't build apache2 module
 #
-%define	apxs	/usr/sbin/apxs
 %define	apxs1	/usr/sbin/apxs1
+%define	apxs2	/usr/sbin/apxs
 %include 	/usr/lib/rpm/macros.perl
 %define		pdir	CGI
 %define		pnam	SpeedyCGI
@@ -13,7 +13,7 @@ Summary:	Speed up perl CGI scripts by running them persistently
 Summary(pl.UTF-8):	Moduł przyspieszający perlowe skrypty CGI
 Name:		perl-CGI-SpeedyCGI
 Version:	2.22
-Release:	10
+Release:	11
 License:	GPL v2+
 Group:		Networking/Daemons
 Source0:	http://www.cpan.org/modules/by-module/%{pdir}/%{pdir}-%{pnam}-%{version}.tar.gz
@@ -31,15 +31,15 @@ BuildRequires:	rpmbuild(macros) >= 1.268
 Requires:	perl(DynaLoader) = %(%{__perl} -MDynaLoader -e 'print DynaLoader->VERSION')
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%if %{with apache2}
-%define		_pkglibdir	%(%{apxs} -q LIBEXECDIR 2>/dev/null)
-%define		_sysconfdir	%(%{apxs} -q SYSCONFDIR 2>/dev/null)
-%define		httpdir		/home/services/httpd
-%endif
 %if %{with apache1}
-%define		_pkglibdir1	%(%{apxs1} -q LIBEXECDIR 2>/dev/null)
-%define		_sysconfdir1	%(%{apxs1} -q SYSCONFDIR 2>/dev/null)
-%define		httpdir1		/home/services/apache
+%define		apache1confdir	%(%{apxs1} -q SYSCONFDIR 2>/dev/null)/conf.d
+%define		apache1libdir	%(%{apxs1} -q LIBEXECDIR 2>/dev/null)
+%define		apache1docdir	/home/services/apache
+%endif
+%if %{with apache2}
+%define		apache2confdir	%(%{apxs2} -q SYSCONFDIR 2>/dev/null)/conf.d
+%define		apache2libdir	%(%{apxs2} -q LIBEXECDIR 2>/dev/null)
+%define		apache2docdir	/home/services/httpd
 %endif
 
 %description
@@ -106,7 +106,7 @@ Moduł apache SpeedyCGI.
 	OPTIMIZE="%{rpmcflags}"
 %endif
 %if %{with apache2}
-%{__make} -C mod_speedycgi2 APXS="%{apxs}" \
+%{__make} -C mod_speedycgi2 APXS="%{apxs2}" \
 	OPTIMIZE="%{rpmcflags}"
 %endif
 
@@ -120,14 +120,14 @@ install -d $RPM_BUILD_ROOT%{perl_archlib}
 	DESTDIR=$RPM_BUILD_ROOT
 
 %if %{with apache1}
-install -d $RPM_BUILD_ROOT{%{_pkglibdir1},%{httpdir1}/speedy,%{_sysconfdir1}/conf.d}
-install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir1}/conf.d/mod_speedycgi.conf
-install mod_speedycgi/mod_speedycgi.so $RPM_BUILD_ROOT%{_pkglibdir1}
+install -d $RPM_BUILD_ROOT{%{apache1libdir},%{apache1docdir}/speedy,%{apache1confdir}}
+install %{SOURCE1} $RPM_BUILD_ROOT%{apache1confdir}/mod_speedycgi.conf
+install mod_speedycgi/mod_speedycgi.so $RPM_BUILD_ROOT%{apache1libdir}
 %endif
 %if %{with apache2}
-install -d $RPM_BUILD_ROOT{%{_pkglibdir},%{httpdir}/speedy,%{_sysconfdir}/httpd.conf}
-install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf/90_mod_speedycgi.conf
-install mod_speedycgi2/mod_speedycgi.so $RPM_BUILD_ROOT%{_pkglibdir}
+install -d $RPM_BUILD_ROOT{%{apache2libdir},%{apache2docdir}/speedy,%{apache2confdir}}
+install %{SOURCE1} $RPM_BUILD_ROOT%{apache2confdir}/90_mod_speedycgi.conf
+install mod_speedycgi2/mod_speedycgi.so $RPM_BUILD_ROOT%{apache2libdir}
 %endif
 
 ln -s speedy $RPM_BUILD_ROOT%{_bindir}/speedycgi
@@ -160,15 +160,15 @@ fi
 %if %{with apache1}
 %files -n apache1-mod_speedycgi
 %defattr(644,root,root,755)
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir1}/conf.d/*mod_speedycgi.conf
-%attr(755,root,root) %{_pkglibdir1}/mod_speedycgi.so
-%dir %{httpdir1}/*
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{apache1confdir}/*mod_speedycgi.conf
+%attr(755,root,root) %{apache1libdir}/mod_speedycgi.so
+%dir %{apache1docdir}/*
 %endif
 
 %if %{with apache2}
 %files -n apache-mod_speedycgi
 %defattr(644,root,root,755)
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf/*mod_speedycgi.conf
-%attr(755,root,root) %{_pkglibdir}/mod_speedycgi.so
-%dir %{httpdir}/*
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{apache2confdir}/*mod_speedycgi.conf
+%attr(755,root,root) %{apache2libdir}/mod_speedycgi.so
+%dir %{apache2docdir}/*
 %endif
