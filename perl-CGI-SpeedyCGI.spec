@@ -99,14 +99,17 @@ Moduł apache SpeedyCGI.
 %{?with_apache2:cd mod_speedycgi2 && perl Makefile.PL && cd ..}
 
 %{__make} -j1 \
+	CC="%{__cc}" \
 	OPTIMIZE="%{rpmcflags}"
 
 %if %{with apache1}
 %{__make} -C mod_speedycgi APXS="%{apxs1}" \
+	CC="%{__cc}" \
 	OPTIMIZE="%{rpmcflags}"
 %endif
 %if %{with apache2}
 %{__make} -C mod_speedycgi2 APXS="%{apxs2}" \
+	CC="%{__cc}" \
 	OPTIMIZE="%{rpmcflags}"
 %endif
 
