@@ -1,0 +1,338 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## empty-param.dpatch by Niko Tyni <ntyni@iki.fi>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Allow empty strings as command-line parameters
+
+@DPATCH@
+diff -urNad speedy-cgi-perl-2.22-2/src/speedy_frontend.c /tmp/dpep.uw96yI/speedy-cgi-perl-2.22-2/src/speedy_frontend.c
+--- speedy-cgi-perl-2.22-2/src/speedy_frontend.c	2003-10-07 07:03:48.000000000 +0300
++++ /tmp/dpep.uw96yI/speedy-cgi-perl-2.22-2/src/speedy_frontend.c	2005-10-04 15:49:59.937982331 +0300
+@@ -535,7 +535,26 @@
+ 	    ADD_STRING(b, s, l);
+ 	}
+     }
++    /* Terminate with zero-length string */
++    ADDCHAR(b, 0);
++}
+ 
++/* Copy a block of strings into the buffer, including empty strings */
++static void add_strings_with_empty(register SpeedyBuf *b, register const char * const * p)
++{
++    int l;
++    register const char *s;
++
++    /* Add strings in p array */
++    for (; (s = *p); ++p) {
++	if ((l = strlen(s))) {
++	    ADD_STRING(b, s, l);
++	} else {
++	    /* add a 1-byte long string containing just '\0' */
++	    l = 1;
++	    ADD_STRING(b, s, l);
++	}
++    }
+     /* Terminate with zero-length string */
+     ADDCHAR(b, 0);
+ }
+@@ -560,7 +579,7 @@
+ 
+     /* Add env and argv */
+     add_strings(sb, envp);
+-    add_strings(sb, scr_argv+1);
++    add_strings_with_empty(sb, scr_argv+1);
+ 
+     /* Put script filename into buffer */
+     add_string(sb, script_fname, strlen(script_fname));
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## strerror.dpatch by Niko Tyni <ntyni@iki.fi>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Don't crash while printing a fatal error.
+
+@DPATCH@
+diff -urNad speedy-cgi-perl-2.22/src/speedy_util.c /tmp/dpep.ifgC6c/speedy-cgi-perl-2.22/src/speedy_util.c
+--- speedy-cgi-perl-2.22/src/speedy_util.c	2005-10-06 21:36:00.974971661 +0300
++++ /tmp/dpep.ifgC6c/speedy-cgi-perl-2.22/src/speedy_util.c	2005-10-06 21:36:41.673012983 +0300
+@@ -96,13 +96,42 @@
+ }
+ 
+ static void just_die(const char *fmt, va_list ap) {
++    /*
++     * All this strerror_r() stuff is here because
++     * including perl.h in some cases (Perl 5.8?) replaces 
++     * strerr() with a wrapper that needs an embedded perl 
++     * interpreter running. Otherwise we get SIGSEGV when 
++     * accessing interpreter-specific global variables for the
++     * strerror buffer
++     *
++     * Furthermore, there are two implementations of
++     * strerror_r() out there, with different prototypes.
++     */
++
+     char buf[2048];
++#ifdef HAS_STRERROR_R
++    char errbuf[256];
++    int errsv;
++#endif
+ 
+     sprintf(buf, "%s[%u]: ", SPEEDY_PROGNAME, (int)getpid());
+     vsprintf(buf + strlen(buf), fmt, ap);
+     if (errno) {
+ 	strcat(buf, ": ");
++#ifdef HAS_STRERROR_R
++#ifdef _GNU_SOURCE
++	strcat(buf, strerror_r(errno, errbuf, sizeof(errbuf)));
++#else /* ! _GNU_SOURCE */
++	errsv = errno;
++	if (strerror_r(errsv, errbuf, sizeof(errbuf))
++	    sprintf(buf + strlen(buf), "(errno = %d)", errsv);
++	else
++	    strcat(buf, errbuf);
++    }
++#endif
++#else /* ! HAS_STRERROR_R */
+ 	strcat(buf, strerror(errno));
++#endif /* HAS_STRERROR_R */
+     }
+     strcat(buf, "\n");
+ #   ifdef SPEEDY_DEBUG
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## log-exit-messages-on-die.dpatch by Jose Carlos Garcia Sogo <jsogo@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Try to log exit messages on die() (#326442)
+
+@DPATCH@
+diff -urNad --exclude=CVS --exclude=.svn ./src/speedy_main.c /tmp/dpep-work.CVEsCM/speedy-cgi-perl-2.22/src/speedy_main.c
+--- ./src/speedy_main.c	2003-10-07 06:03:48.000000000 +0200
++++ /tmp/dpep-work.CVEsCM/speedy-cgi-perl-2.22/src/speedy_main.c	2005-09-04 16:27:00.000000000 +0200
+@@ -299,6 +299,7 @@
+     /* Copy streams */
+     while (1) {
+ 	/* Do reads/writes */
++        int close_stdout_delayed = 0;
+ 	for (i = 0; i < NUMFDS; ++i) {
+ 	    register CopyBuf *b = cb + i;
+ 	    int do_read  = my_canread(b) &&
+@@ -346,10 +347,17 @@
+ 		/* Try to close files now, so we can wake up the backend
+ 		 * and do more I/O before dropping into select
+ 		 */
+-		if (!do_read && !do_write)
+-		    try_close(b);
+-	    }
+-	}
++		if (!do_read && !do_write) {
++                    if (i == 1)
++                        /* delay closing STDOUT until all the other fds are closed */
++                        close_stdout_delayed = 1;
++                    else
++		        try_close(b);
++                }
++            }
++        }
++        if (close_stdout_delayed)
++            try_close(cb+1);
+ 
+ 	/* All done with reads/writes after backend exited */
+ 	if (backend_exited) {
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 60apache-docs.dpatch by Niko Tyni <ntyni@iki.fi>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Documentation for bug #204461.
+
+@DPATCH@
+diff -urNad speedy-cgi-perl-2.22~/src/SpeedyCGI.src speedy-cgi-perl-2.22/src/SpeedyCGI.src
+--- speedy-cgi-perl-2.22~/src/SpeedyCGI.src	2006-06-20 22:09:08.000000000 +0300
++++ speedy-cgi-perl-2.22/src/SpeedyCGI.src	2006-06-20 22:29:10.587452378 +0300
+@@ -250,6 +250,13 @@
+ be Speedy followed by the option name.  For example to set the
+ Timeout option, use the apache directive SpeedyTimeout.
+ 
++Note that these variables are global. There is currently no way to run
++different scripts with different SpeedyCGI options when they are run
++from the Apache module. Any <Directory> or <Location> contexts
++have no effect on the scope of the SpeedyCGI options. When the
++same SpeedyCGI option is set several times, the last one overrides
++the others.
++
+ =back
+ 
+ =head2 Context
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 70apr-brigade-foreach.dpatch by Niko Tyni <ntyni@iki.fi>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Apache 2.2 compatibility fixes (#393017):
+## DP:   * APR_BRIGADE_FOREACH macro removal
+## DP:   * apr_filename_of_pathname() rename
+
+@DPATCH@
+diff -urNad speedy-cgi-perl-2.22~/src/mod_speedycgi2.c speedy-cgi-perl-2.22/src/mod_speedycgi2.c
+--- speedy-cgi-perl-2.22~/src/mod_speedycgi2.c	2006-10-16 21:46:52.000000000 +0300
++++ speedy-cgi-perl-2.22/src/mod_speedycgi2.c	2006-10-16 21:47:07.000000000 +0300
+@@ -340,7 +340,10 @@
+     const char *buf;
+     apr_size_t len;
+     apr_status_t rv;
+-    APR_BRIGADE_FOREACH(e, bb) {
++    for (e = APR_BRIGADE_FIRST(bb);
++        e != APR_BRIGADE_SENTINEL(bb);
++        e  = APR_BUCKET_NEXT(e)) {
++
+         if (APR_BUCKET_IS_EOS(e)) {
+             break;
+         }
+@@ -380,7 +383,7 @@
+         return DECLINED;
+     }
+ 
+-    argv0 = apr_filename_of_pathname(r->filename);
++    argv0 = apr_filepath_name_get(r->filename);
+     nph = !(strncmp(argv0, "nph-", 4));
+ 
+     if (!(ap_allow_options(r) & OPT_EXECCGI) && !is_scriptaliased(r))
+@@ -436,7 +439,7 @@
+     if ((rv = default_build_command(&command, &argv, r, p)) != APR_SUCCESS) {
+         ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_TOCLIENT, rv, r,
+                       "don't know how to spawn child process: %s", 
+-                      apr_filename_of_pathname(r->filename));
++                      apr_filepath_name_get(r->filename));
+         return HTTP_INTERNAL_SERVER_ERROR;
+     }
+ 
+@@ -445,7 +448,7 @@
+                             command, argv, r, p)) != APR_SUCCESS) {
+         ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_TOCLIENT, rv, r,
+                       "couldn't spawn child process: %s",
+-		      apr_filename_of_pathname(r->filename));
++		      apr_filepath_name_get(r->filename));
+         return HTTP_INTERNAL_SERVER_ERROR;
+     }
+ 
+@@ -465,7 +468,9 @@
+             return rv;
+         }
+ 
+-        APR_BRIGADE_FOREACH(bucket, bb) {
++        for (bucket = APR_BRIGADE_FIRST(bb);
++            bucket != APR_BRIGADE_SENTINEL(bb);
++            bucket  = APR_BUCKET_NEXT(bucket)) {
+             const char *data;
+             apr_size_t len;
+ 
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 80strip-backend-libs.dpatch by Niko Tyni <ntyni@iki.fi>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Use the automatic 'remove extra libs' feature with speedy_backend too.
+## DP: These unnecessary linking flags get removed: -lm -lcrypt -lpthread
+
+@DPATCH@
+diff -urNad speedy-cgi-perl-2.22~/speedy_backend/Makefile.PL speedy-cgi-perl-2.22/speedy_backend/Makefile.PL
+--- speedy-cgi-perl-2.22~/speedy_backend/Makefile.PL	2003-10-07 07:03:48.000000000 +0300
++++ speedy-cgi-perl-2.22/speedy_backend/Makefile.PL	2006-10-16 21:55:04.000000000 +0300
+@@ -29,6 +29,10 @@
+ sub am_frontend {0}
+ sub my_name {'backend'}
+ 
++sub remove_libs { my $class = shift;
++    'BIN=speedy_backend ../util/remove_libs';
++}
++
+ use ExtUtils::Embed;
+ 
+ my $tmp = "xsinit.tmp$$";
+diff -urNad speedy-cgi-perl-2.22~/util/remove_libs speedy-cgi-perl-2.22/util/remove_libs
+--- speedy-cgi-perl-2.22~/util/remove_libs	2003-10-11 09:36:14.000000000 +0300
++++ speedy-cgi-perl-2.22/util/remove_libs	2006-10-16 21:53:52.000000000 +0300
+@@ -3,7 +3,11 @@
+ # Remove extranaeous libs from the linking command.  Reduces shared-library
+ # overhead at exec time.
+ 
+-BIN=speedy
++# allow testing other binaries too
++if [ "x$BIN" = "x" ]
++then
++	BIN=speedy
++fi
+ TMP1=/tmp/remove_libs$$
+ TMP2="${TMP1}2"
+ 
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 85test-timeout.dpatch by Niko Tyni <ntyni@iki.fi>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Increase the time for the backend to start so slower buildds
+## DP: have a chance. (#418717)
+
+@DPATCH@
+diff -urNad speedy-cgi-perl-2.22~/speedy/t/killfe.t speedy-cgi-perl-2.22/speedy/t/killfe.t
+--- speedy-cgi-perl-2.22~/speedy/t/killfe.t	2003-10-11 23:13:55.000000000 +0300
++++ speedy-cgi-perl-2.22/speedy/t/killfe.t	2007-04-11 16:14:39.000000000 +0300
+@@ -9,7 +9,7 @@
+ my $cmd = "exec $ENV{SPEEDY} -- -M1 $scr </dev/null |";
+ 
+ my $pid = open (RUN1, $cmd);
+-sleep(1);
++sleep(3);
+ kill(9, $pid);
+ wait;
+ open (RUN2, $cmd);
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 90speedy_unsafe_putenv.dpatch by banb@yahoo.co.jp
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Debian #418447, CPAN #13521
+## DP: http://rt.cpan.org/Public/Bug/Display.html?id=13521
+
+@DPATCH@
+diff -urNad speedy-cgi-perl-2.22~/src/speedy_backend_main.c speedy-cgi-perl-2.22/src/speedy_backend_main.c
+--- speedy-cgi-perl-2.22~/src/speedy_backend_main.c	2003-10-07 07:03:48.000000000 +0300
++++ speedy-cgi-perl-2.22/src/speedy_backend_main.c	2007-04-10 16:16:42.000000000 +0300
+@@ -176,6 +176,10 @@
+         DIE_QUIET("Cannot allocate perl");
+     perl_construct(my_perl);
+ 
++#if defined(PL_use_safe_putenv) || defined(PL_Guse_safe_putenv)
++    PL_use_safe_putenv = 0;
++#endif
++
+ #ifdef SPEEDY_DEBUG
+     dont_fork = getenv("SPEEDY_NOPARENT") != NULL;
+ #endif
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 95perl5.10.dpatch by Niko Tyni <ntyni@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Fix build failures with Perl 5.10.
+## DP:  Pod::Text::pod2text() calling conventions changed
+## DP:  use Newx() instead of New()
+
+@DPATCH@
+diff -urNad speedy-cgi-perl-2.22~/Makefile.PL speedy-cgi-perl-2.22/Makefile.PL
+--- speedy-cgi-perl-2.22~/Makefile.PL	2008-01-28 12:17:32.000000000 +0200
++++ speedy-cgi-perl-2.22/Makefile.PL	2008-01-28 12:18:35.000000000 +0200
+@@ -71,7 +71,7 @@
+ 	chmod -R u+w,go-w,go+r .
+ 
+ README: src/SpeedyCGI.pm
+-	cd src && $(PERL) -e "use Pod::Text; pod2text(-80)" <SpeedyCGI.pm >../README
++	cd src && pod2text -80 <SpeedyCGI.pm >../README
+ 
+ README.html: src/SpeedyCGI.pm
+ 	cd src && pod2html SpeedyCGI.pm >../README.html && $(RM_F) pod2h*
+diff -urNad speedy-cgi-perl-2.22~/src/speedy_backend_main.h speedy-cgi-perl-2.22/src/speedy_backend_main.h
+--- speedy-cgi-perl-2.22~/src/speedy_backend_main.h	2003-10-07 07:03:48.000000000 +0300
++++ speedy-cgi-perl-2.22/src/speedy_backend_main.h	2008-01-28 12:18:22.000000000 +0200
+@@ -38,7 +38,7 @@
+ 
+ #else
+ 
+-#define speedy_new(s,n,t)	New(123,s,n,t)
++#define speedy_new(s,n,t)	Newx(s,n,t)
+ #define speedy_renew		Renew
+ #define speedy_free		Safefree
+ 
