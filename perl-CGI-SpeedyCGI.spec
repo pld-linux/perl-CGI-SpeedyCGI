@@ -63,7 +63,6 @@ Summary(pl.UTF-8):	Moduł apache SpeedyCGI
 Group:		Networking/Daemons
 Requires:	%{name} = %{version}-%{release}
 Requires:	apache(modules-api) = %apache_modules_api
-BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description -n apache-mod_speedycgi
 SpeedyCGI apache module.
@@ -77,7 +76,6 @@ Summary(pl.UTF-8):	Moduł apache SpeedyCGI
 Group:		Networking/Daemons
 Requires:	%{name} = %{version}-%{release}
 Requires:	apache1 >= 1.3.33-2
-BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description -n apache1-mod_speedycgi
 SpeedyCGI apache module.
