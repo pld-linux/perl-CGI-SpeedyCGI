@@ -13,7 +13,7 @@ Summary:	Speed up perl CGI scripts by running them persistently
 Summary(pl.UTF-8):	Moduł przyspieszający perlowe skrypty CGI
 Name:		perl-CGI-SpeedyCGI
 Version:	2.22
-Release:	23
+Release:	24
 License:	GPL v2+
 Group:		Networking/Daemons
 Source0:	http://www.cpan.org/modules/by-module/%{pdir}/%{pdir}-%{pnam}-%{version}.tar.gz
