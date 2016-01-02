@@ -1,0 +1,20 @@
+--- CGI-SpeedyCGI-2.22/src/speedy_inc.h~	2003-10-07 06:03:48.000000000 +0200
++++ CGI-SpeedyCGI-2.22/src/speedy_inc.h	2016-01-02 10:31:56.452878078 +0100
+@@ -40,13 +40,15 @@
+ #ifndef MAP_FAILED
+ #   define MAP_FAILED (-1)
+ #endif
+-
++/*
+ #ifdef __GNUC__
+ #define SPEEDY_INLINE __inline__
+ #else
++*/
+ #define SPEEDY_INLINE
++/*
+ #endif
+-
++*/
+ #ifdef EWOULDBLOCK
+ #   define SP_EWOULDBLOCK(e) ((e) == EWOULDBLOCK)
+ #else

@@ -6,14 +6,14 @@
 #
 %define	apxs1	/usr/sbin/apxs1
 %define	apxs2	/usr/sbin/apxs
-%include 	/usr/lib/rpm/macros.perl
+%include	/usr/lib/rpm/macros.perl
 %define		pdir	CGI
 %define		pnam	SpeedyCGI
 Summary:	Speed up perl CGI scripts by running them persistently
 Summary(pl.UTF-8):	Moduł przyspieszający perlowe skrypty CGI
 Name:		perl-CGI-SpeedyCGI
 Version:	2.22
-Release:	25
+Release:	26
 License:	GPL v2+
 Group:		Networking/Daemons
 Source0:	http://www.cpan.org/modules/by-module/%{pdir}/%{pdir}-%{pnam}-%{version}.tar.gz
@@ -22,6 +22,7 @@ Source1:	apache-mod_speedycgi.conf
 Patch0:		%{name}-DESTDIR.patch
 Patch1:		%{name}-APXS.patch
 Patch2:		%{name}-debian.patch
+Patch3:		bad-inline.patch
 URL:		http://daemoninc.com/SpeedyCGI/
 %{?with_apache2:BuildRequires:	apache-devel}
 %{?with_apache1:BuildRequires:	apache1-devel}
@@ -88,6 +89,7 @@ Moduł apache SpeedyCGI.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 %{__perl} Makefile.PL </dev/null \
