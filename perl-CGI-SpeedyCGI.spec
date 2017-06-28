@@ -13,7 +13,7 @@ Summary:	Speed up perl CGI scripts by running them persistently
 Summary(pl.UTF-8):	Moduł przyspieszający perlowe skrypty CGI
 Name:		perl-CGI-SpeedyCGI
 Version:	2.22
-Release:	29
+Release:	30
 License:	GPL v2+
 Group:		Networking/Daemons
 Source0:	http://www.cpan.org/modules/by-module/%{pdir}/%{pdir}-%{pnam}-%{version}.tar.gz
@@ -23,6 +23,7 @@ Patch0:		%{name}-DESTDIR.patch
 Patch1:		%{name}-APXS.patch
 Patch2:		%{name}-debian.patch
 Patch3:		bad-inline.patch
+Patch4:		CGI-SpeedyCGI-2.22-Fix-building-on-Perl-without-dot-in-INC.patch
 URL:		http://daemoninc.com/SpeedyCGI/
 %{?with_apache2:BuildRequires:	apache-devel}
 %{?with_apache1:BuildRequires:	apache1-devel}
@@ -90,6 +91,7 @@ Moduł apache SpeedyCGI.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 %{__perl} Makefile.PL </dev/null \

@@ -1,0 +1,12 @@
+diff -up CGI-SpeedyCGI-2.22/Makefile.PL.orig CGI-SpeedyCGI-2.22/Makefile.PL
+--- CGI-SpeedyCGI-2.22/Makefile.PL.orig	2017-05-16 09:23:56.902717537 +0200
++++ CGI-SpeedyCGI-2.22/Makefile.PL	2017-05-16 09:21:03.489446240 +0200
+@@ -2,7 +2,7 @@
+ use strict;
+ use ExtUtils::MakeMaker;
+ BEGIN {
+-    require 'src/SpeedyMake.pl';
++    require './src/SpeedyMake.pl';
+     import SpeedyMake qw(%write_makefile_common);
+ }
+ 
