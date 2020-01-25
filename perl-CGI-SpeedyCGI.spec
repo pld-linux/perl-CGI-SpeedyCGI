@@ -6,7 +6,6 @@
 #
 %define	apxs1	/usr/sbin/apxs1
 %define	apxs2	/usr/sbin/apxs
-%include	/usr/lib/rpm/macros.perl
 %define		pdir	CGI
 %define		pnam	SpeedyCGI
 Summary:	Speed up perl CGI scripts by running them persistently
