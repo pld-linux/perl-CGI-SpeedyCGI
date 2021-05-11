@@ -100,17 +100,17 @@ Moduł apache SpeedyCGI.
 
 %{__make} -j1 \
 	CC="%{__cc}" \
-	OPTIMIZE="%{rpmcflags}"
+	OPTIMIZE="%{rpmcflags} -fcommon"
 
 %if %{with apache1}
 %{__make} -C mod_speedycgi APXS="%{apxs1}" \
 	CC="%{__cc}" \
-	OPTIMIZE="%{rpmcflags}"
+	OPTIMIZE="%{rpmcflags} -fcommon"
 %endif
 %if %{with apache2}
 %{__make} -C mod_speedycgi2 APXS="%{apxs2}" \
 	CC="%{__cc}" \
-	OPTIMIZE="%{rpmcflags}"
+	OPTIMIZE="%{rpmcflags} -fcommon"
 %endif
 
 %{?with_test:%{__make} test}
